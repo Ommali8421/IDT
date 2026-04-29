@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, MessageSquare, ThumbsUp, ThumbsDown, Send } from 'lucide-react';
 import { useFoodContext } from '../context/FoodContext';
-import { students } from '../data/mess';
 import toast from 'react-hot-toast';
 import ChartComponent from '../components/ChartComponent';
 
@@ -34,7 +33,7 @@ function StarRating({ value, onChange, label }: { value: number; onChange: (v: n
 export default function Feedback() {
   const { feedback, addFeedback } = useFoodContext();
   const [form, setForm] = useState({
-    studentName: students[0].name,
+    studentName: '',
     mealType: 'Lunch' as 'Breakfast' | 'Lunch' | 'Dinner',
     qualityRating: 0,
     quantityRating: 0,
@@ -49,6 +48,7 @@ export default function Feedback() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.studentName.trim()) { toast.error('Please enter your name'); return; }
     if (!form.qualityRating || !form.quantityRating) { toast.error('Please rate quality and quantity'); return; }
     setLoading(true);
     await new Promise(r => setTimeout(r, 800));
@@ -93,10 +93,8 @@ export default function Feedback() {
               {/* Student selector */}
               <div>
                 <label className="text-sm font-semibold text-gray-700 mb-1.5 block">Your Name</label>
-                <select value={form.studentName} onChange={e => setForm(p => ({ ...p, studentName: e.target.value }))}
-                  className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400">
-                  {students.map(s => <option key={s.id}>{s.name}</option>)}
-                </select>
+                <input type="text" placeholder="Enter your name" value={form.studentName} onChange={e => setForm(p => ({ ...p, studentName: e.target.value }))}
+                  className="w-full px-4 py-3 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-green-400" />
               </div>
 
               {/* Meal type */}

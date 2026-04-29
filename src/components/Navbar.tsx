@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, ChevronDown, ChevronRight } from 'lucide-react';
+import { Leaf, Menu, X, ChevronDown, ChevronRight, User as UserIcon, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../context/AuthContext';
 
 const FEATURES = [
   { to: '/mess',     label: '🏫 Mess Management',     desc: 'Smart hostel food tracking' },
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [mobileFeatOpen, setMobileFeatOpen] = useState(false);
   const dropRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, logout, user } = useAuth();
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -110,13 +112,35 @@ export default function Navbar() {
             </div>
           </nav>
 
-          {/* CTA */}
-          <button
-            onClick={() => navigate('/donate')}
-            className="hidden lg:flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all pulse-green"
-          >
-            Donate Food <ChevronRight className="w-4 h-4" />
-          </button>
+          {/* CTA / Auth */}
+          <div className="hidden lg:flex items-center gap-3">
+            {isAuthenticated ? (
+              <>
+                <span className="text-sm font-medium text-gray-700 flex items-center gap-1">
+                  <UserIcon className="w-4 h-4 text-green-600" />
+                  {user?.name}
+                </span>
+                <button
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
+                  className="flex items-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold px-4 py-2 rounded-xl transition-all"
+                >
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" className="text-sm font-medium text-gray-700 hover:text-green-600 transition-colors">
+                  Log in
+                </Link>
+                <Link to="/signup" className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all pulse-green">
+                  Sign up <ChevronRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
+          </div>
 
           {/* Mobile hamburger */}
           <button
@@ -181,12 +205,31 @@ export default function Navbar() {
               </div>
             )}
 
-            <button
-              onClick={() => { navigate('/donate'); setMobileOpen(false); }}
-              className="w-full mt-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
-            >
-              Donate Food
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={() => { logout(); setMobileOpen(false); navigate('/'); }}
+                className="w-full mt-2 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <LogOut className="w-4 h-4" /> Logout
+              </button>
+            ) : (
+              <div className="flex flex-col gap-2 mt-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileOpen(false)}
+                  className="w-full text-center bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-colors"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

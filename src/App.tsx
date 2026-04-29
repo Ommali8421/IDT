@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { FoodProvider } from './context/FoodContext';
+import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
@@ -11,6 +12,8 @@ import Request   from './pages/Request';
 import Dashboard from './pages/Dashboard';
 import Listings  from './pages/Listings';
 import About     from './pages/About';
+import Login     from './pages/Login';
+import Signup    from './pages/Signup';
 
 // New Feature Pages
 import MessManagement from './pages/MessManagement';
@@ -23,14 +26,17 @@ import Feedback       from './pages/Feedback';
 
 export default function App() {
   return (
-    <FoodProvider>
-      <BrowserRouter>
-        <div className="flex flex-col min-h-screen bg-white">
+    <AuthProvider>
+      <FoodProvider>
+        <BrowserRouter>
+          <div className="flex flex-col min-h-screen bg-white">
           <Navbar />
           <main className="flex-1">
             <Routes>
               {/* Original pages */}
               <Route path="/"          element={<Home />}      />
+              <Route path="/login"     element={<Login />}     />
+              <Route path="/signup"    element={<Signup />}    />
               <Route path="/donate"    element={<Donate />}    />
               <Route path="/request"   element={<Request />}   />
               <Route path="/dashboard" element={<Dashboard />} />
@@ -66,5 +72,6 @@ export default function App() {
         </div>
       </BrowserRouter>
     </FoodProvider>
+  </AuthProvider>
   );
 }
